@@ -218,7 +218,7 @@ public class JYDZ_Comm_Protocol {
                         commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_FEATURE;
 
-                        //For incompleted data
+                        //For incomplete data
                         if (index + commLength > totalData.length) {
                             lastContinueBytes = Arrays.copyOfRange(totalData, index - 1, len);
                         }

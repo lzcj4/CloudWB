@@ -3,7 +3,6 @@ package com.ifingers.yunwb.utility;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
-import android.view.WindowManager;
 
 /**
  * Created by Nick_PC on 2016/5/16.
@@ -21,7 +20,8 @@ public class WakeLock {
 
     private void initLocks() {
         PowerManager powerMgr = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        powerMgr.newWakeLock(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, "scrren_lock");
+        mScreenLock=powerMgr.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK,"screen_lock");
+       // mScreenLock = powerMgr.newWakeLock(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, "scrren_lock");
 
         WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         mWifiLock = wifiMgr.createWifiLock("wifi_lock");
