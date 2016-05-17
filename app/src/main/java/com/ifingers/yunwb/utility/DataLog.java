@@ -17,9 +17,11 @@ public class DataLog {
     private static final String TAG = "DataLog";
     private static final String DATA_FOLDER = "BTData";
     private static final String DATA_IN_FILE = "In.txt";
+    private static final String DATA_IN_LINE_FILE = "In_Line.txt";
     private static final String DATA_OUT_FILE = "Out.txt";
 
     private OutputStreamWriter mInWriter;
+    private OutputStreamWriter mInLineWriter;
     private OutputStreamWriter mOutWriter;
 
     public static DataLog getInstance() {
@@ -39,6 +41,7 @@ public class DataLog {
             File dataFolder = getDataFolder();
             if (null != dataFolder) {
                 mInWriter = createDataFile(dataFolder, DATA_IN_FILE);
+                mInLineWriter = createDataFile(dataFolder, DATA_IN_LINE_FILE);
                 mOutWriter = createDataFile(dataFolder, DATA_OUT_FILE);
             }
         } catch (IllegalAccessException e) {
@@ -96,6 +99,9 @@ public class DataLog {
             try {
                 writer.append(data);
                 // writer.flush();
+                if (count++ % 50 == 0) {
+                    writer.flush();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -119,6 +125,12 @@ public class DataLog {
         write(mInWriter, data);
     }
 
+    public void writeInLineData(String data) {
+        if (!TextUtils.isEmpty(data)) {
+            write(mInLineWriter, data + "\r\n");
+        }
+    }
+
     public void writeOutData(String data) {
         write(mOutWriter, data);
     }
@@ -126,6 +138,8 @@ public class DataLog {
     public void writeOutData(byte[] data) {
         write(mOutWriter, data);
     }
+
+    static long count = 0;
 
     private static void closeStreamWriter(OutputStreamWriter writer) {
         if (null != writer) {
@@ -140,8 +154,10 @@ public class DataLog {
 
     public void close() {
         closeStreamWriter(mInWriter);
+        closeStreamWriter(mInLineWriter);
         closeStreamWriter(mOutWriter);
         mInWriter = null;
+        mInLineWriter = null;
         mOutWriter = null;
     }
 }

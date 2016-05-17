@@ -187,6 +187,7 @@ public class JYDZ_Comm_Protocol {
         String hexStr = HexUtil.byteToString(TAG, data);
         if (!TextUtils.isEmpty(hexStr)) {
             DataLog.getInstance().writeInData(hexStr);
+            DataLog.getInstance().writeInLineData(hexStr);
         }
 
         byte[] totalData = combineBytes(lastContinueBytes, data);
@@ -219,7 +220,7 @@ public class JYDZ_Comm_Protocol {
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_FEATURE;
 
                         //For incomplete data
-                        if (index + commLength > totalData.length) {
+                        if (index + commLength >=totalData.length) {
                             lastContinueBytes = Arrays.copyOfRange(totalData, index - 1, len);
                         }
                     } else {
