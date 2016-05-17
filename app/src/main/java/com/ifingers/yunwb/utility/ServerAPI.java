@@ -476,6 +476,7 @@ public class ServerAPI {
             connection.connect();
 
             int response = connection.getResponseCode();
+            // TODO: 2016/5/11  why reponse with 200 or 500 ?
             if (response == 200) {
                 DataInputStream reader = new DataInputStream(connection.getInputStream());
                 FrameSet frameSet = parseFrameset(reader);
@@ -509,7 +510,6 @@ public class ServerAPI {
             if (response == 200) {
                 InputStream is = connection.getInputStream();
                 DataInputStream reader = new DataInputStream(is);
-
                 try {
                     int seqNum = reader.readInt();
                     Log.e(tag, "snapshot seq num" + seqNum);
@@ -727,6 +727,7 @@ public class ServerAPI {
         private String wxAppKey = "wx1681c34b79f4013a";
         private String wxAppSecret = "7aee473ffd21d083f0d894c7b8028ae4";
         private String wxAppState = "thisisastate";
+        ///TODO: how to define the pen and rubber size??
         private int ruberMaxSize = 2812 * 4993;  //80mm / 932mm * 32767,  80mm / 525mm * 32767
         private int ruberMinSize = 1406 * 2496;  //40mm / 932mm * 32767,  40mm / 525mm * 32767
         private int penMaxSize = 360 * 630;      //10mm / 932mm * 32767,  10mm / 525mm * 32767

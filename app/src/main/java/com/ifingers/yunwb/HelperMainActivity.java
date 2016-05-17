@@ -65,7 +65,7 @@ public class HelperMainActivity extends AppCompatActivity {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WhiteboardTaskContext.getInstance().claerUserInfoAtLocal();
+                WhiteboardTaskContext.getInstance().clearUserInfoAtLocal();
                 WhiteboardTaskContext.getInstance().setUserInfo(null);
                 finish();
             }
