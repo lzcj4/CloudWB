@@ -154,7 +154,7 @@ public class JYDZ_Comm_Protocol {
             return null;
     }
 
-    byte[] lastContinueBytes = new byte[0];
+    byte[] lastUnhandleData = new byte[0];
 
     private byte[] combineBytes(byte[] data1, byte[] data2) {
         byte[] result = new byte[0];
@@ -190,10 +190,10 @@ public class JYDZ_Comm_Protocol {
             DataLog.getInstance().writeInLineData(hexStr);
         }
 
-        byte[] totalData = combineBytes(lastContinueBytes, data);
+        byte[] totalData = combineBytes(lastUnhandleData, data);
         int[] tempData = new int[totalData.length];
-        if (lastContinueBytes.length != 0) {
-            lastContinueBytes = new byte[0];
+        if (lastUnhandleData.length != 0) {
+            lastUnhandleData = new byte[0];
         }
         resetProtocol();
         Arrays.fill(dataBuffer, 0);
@@ -206,26 +206,25 @@ public class JYDZ_Comm_Protocol {
 
             switch (commStatus) {
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_HEADER:
-                    if (tempData[index] == JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER)
+                    if (tempData[index] == JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER) {
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_LENGTH;
+                    }
                     if (index == len - 1) {
-                        lastContinueBytes = new byte[]{JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER};
+                        lastUnhandleData = new byte[]{JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER};
                     }
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_LENGTH:
                     commLength = tempData[index];
-                    if ((commLength >= 2)) {
-                        commLastStatus = commStatus;
+                    commLastStatus = commStatus;
+                    if (commLength >= 2) {
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_FEATURE;
-
                         //For incomplete data
-                        if (index + commLength >=totalData.length) {
-                            lastContinueBytes = Arrays.copyOfRange(totalData, index - 1, len);
+                        if (index + commLength >= totalData.length) {
+                            lastUnhandleData = Arrays.copyOfRange(totalData, index - 1, len);
                         }
                     } else {
                         errorCode = COMM_STATUS_GET_LENGTH_ERROR;
-                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_ERROR;
                     }
                     break;
@@ -240,24 +239,22 @@ public class JYDZ_Comm_Protocol {
                         mPointCount = (commLength - 2) / 10;
                     }
                     JY_TouchScreen.setNumOfPoints(mPointCount);
+                    commLastStatus = commStatus;
 
                     if (checkDataLength()) {
-                        if (commLength == 2) {
-                            commLastStatus = commStatus;
-                            commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM;
-                        } else {
-                            commLastStatus = commStatus;
-                            commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA;
-                        }
+                        commStatus = commLength == 2 ?
+                                JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM :
+                                JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA;
                     } else {
                         errorCode = COMM_STATUS_GET_FEATURE_ERROR;
-                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_ERROR;
                     }
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA:
-                    dataBuffer[commDataCtr++] = tempData[index];
+                    if (commDataCtr < dataBuffer.length - 1) {
+                        dataBuffer[commDataCtr++] = tempData[index];
+                    }
                     if (commDataCtr >= commLength - 2) {
                         commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM;
@@ -266,13 +263,12 @@ public class JYDZ_Comm_Protocol {
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM:
                     commCheckSum = tempData[index];
+                    commLastStatus = commStatus;
                     if (compareChecksum()) {
                         commCmdState = JYDZ_Comm_Protocol.COMM_CMD_OK;
-                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_HEADER;
                     } else {
                         errorCode = COMM_STATUS_GET_CHECKSUM_ERROR;
-                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_ERROR;
                     }
                     break;
@@ -281,7 +277,7 @@ public class JYDZ_Comm_Protocol {
             }
 
             if (commStatus == JYDZ_Comm_Protocol.COMM_STATUS_ERROR) {
-                Log.e("debug", "protocol parse error " + errorCode);
+                Log.e(TAG, "protocol parse error " + errorCode);
                 resetProtocol();
                 validData.clear();
             }
