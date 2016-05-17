@@ -1,0 +1,91 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* ic_launcher-web.png
+* proguard-project.txt
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:20.+
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => RTConfUILibs\src\main\AndroidManifest.xml
+* assets\ => RTConfUILibs\src\main\assets
+* libs\android-async-http-1.4.8.jar => RTConfUILibs\libs\android-async-http-1.4.8.jar
+* libs\armeabi\libNDFServerLib.so => RTConfUILibs\src\main\jniLibs\armeabi\libNDFServerLib.so
+* libs\armeabi\libnetwork-shared.so => RTConfUILibs\src\main\jniLibs\armeabi\libnetwork-shared.so
+* libs\armeabi\libsdemp-shared.so => RTConfUILibs\src\main\jniLibs\armeabi\libsdemp-shared.so
+* libs\armeabi\libTbAvModuleGeneral.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbAvModuleGeneral.so
+* libs\armeabi\libtbconfclient.so => RTConfUILibs\src\main\jniLibs\armeabi\libtbconfclient.so
+* libs\armeabi\libtbconfutils-shared.so => RTConfUILibs\src\main\jniLibs\armeabi\libtbconfutils-shared.so
+* libs\armeabi\libTbDecoderArmv7a.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbDecoderArmv7a.so
+* libs\armeabi\libTbDemuxer.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbDemuxer.so
+* libs\armeabi\libTbHWPlayerGeneral.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbHWPlayerGeneral.so
+* libs\armeabi\libTbSpeexDecoder.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbSpeexDecoder.so
+* libs\armeabi\libTbStreamMuxer.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbStreamMuxer.so
+* libs\armeabi\libTbTsMuxer.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbTsMuxer.so
+* libs\armeabi\libTbVideoEncoder.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbVideoEncoder.so
+* libs\armeabi\libTbVoE.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbVoE.so
+* libs\armeabi\libTbVoEEx.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbVoEEx.so
+* libs\armeabi\libTbVoEEx2.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbVoEEx2.so
+* libs\armeabi\libTbVoEEx3.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbVoEEx3.so
+* libs\armeabi\libTbVoeExWrapper.so => RTConfUILibs\src\main\jniLibs\armeabi\libTbVoeExWrapper.so
+* libs\armeabi\libtbvoejni.so => RTConfUILibs\src\main\jniLibs\armeabi\libtbvoejni.so
+* libs\audio_device_java.jar => RTConfUILibs\libs\audio_device_java.jar
+* libs\eventbus-1.0.1.jar => RTConfUILibs\libs\eventbus-1.0.1.jar
+* libs\ksoap2-android-assembly-2.6.4-jar-with-dependencies.jar => RTConfUILibs\libs\ksoap2-android-assembly-2.6.4-jar-with-dependencies.jar
+* libs\slf4j-api-1.7.5.jar => RTConfUILibs\libs\slf4j-api-1.7.5.jar
+* libs\tbaudio-4.0.1.jar => RTConfUILibs\libs\tbaudio-4.0.1.jar
+* libs\tbconflibary.jar => RTConfUILibs\libs\tbconflibary.jar
+* libs\tbconfuilibs.jar => RTConfUILibs\libs\tbconfuilibs.jar
+* libs\tbutils.jar => RTConfUILibs\libs\tbutils.jar
+* libs\tbwebservice-4.0.1.jar => RTConfUILibs\libs\tbwebservice-4.0.1.jar
+* res\ => RTConfUILibs\src\main\res\
+* src\ => RTConfUILibs\src\main\java
+
+Missing Android Support Repository:
+-----------------------------------
+Some useful libraries, such as the Android Support Library, are
+installed from a special Maven repository, which should be installed
+via the SDK manager.
+
+It looks like this library is missing from your SDK installation at:
+null
+
+To install it, open the SDK manager, and in the Extras category,
+select "Android Support Repository". You may also want to install the
+"Google Repository" if you want to use libraries like Google Play
+Services.
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

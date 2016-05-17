@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ifingers.yunwb.MeetingWizardActivity">
+
+    <ScrollView
+        android:id="@+id/meeting_members"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F0F0F0">
+
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#F0F0F0">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/meeting_name"
+                    android:textSize="18sp"
+                    android:textColor="#333333"
+                    android:layout_margin="5dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="*"
+                    android:textColor="#ff0000"/>
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:layout_margin="5dp"
+                    android:background="@android:color/transparent"
+                    android:textSize="13sp"
+                    android:maxLength="6"
+                    android:singleLine="true"
+                    android:hint="填写会议名字"/>
+
+            </LinearLayout>
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f0f0f0"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:background="@color/colorWhite">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textSize="18sp"
+                    android:textColor="#333333"
+                    android:text="@string/meeting_pw"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="*"
+                    android:textColor="#ff0000"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:gravity="end"
+                    android:hint="填写参与会议密码"
+                    android:background="@android:color/transparent"
+                    android:textSize="13dp"
+                    android:layout_margin="5dp"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+            </LinearLayout>
+            <View android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:background="#f0f0f0"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorWhite">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_margin="5dp"
+                    android:textSize="18sp"
+                    android:textColor="#333333"
+                    android:text="@string/meeting_location"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@android:color/transparent"
+                    android:textSize="13dp"
+                    android:inputType="textMultiLine"
+                    android:maxLines="2"
+                    android:maxLength="40"
+                    android:lines="2"
+                    android:layout_marginRight="10dp"
+                    android:gravity="end|center_vertical"
+                    android:text=""
+                    android:hint="填写会议地点"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f0f0f0"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorWhite">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:padding="10dp"
+                    android:textColor="#333333"
+                    android:textSize="18sp"
+                    android:text="@string/meeting_company"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_company"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@android:color/transparent"
+                    android:textSize="13dp"
+                    android:layout_marginRight="10dp"
+                    android:inputType="textMultiLine"
+                    android:maxLines="2"
+                    android:lines="2"
+                    android:maxLength="40"
+                    android:gravity="end|center_vertical"
+                    android:text=""
+                    android:hint="填写参与会议单位"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f0f0f0"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorWhite">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/meeting_date_label"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:padding="10dp"
+                    android:textSize="18sp"
+                    android:textColor="#333333"
+                    android:text="@string/meeting_date"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:inputType="date"
+                    android:minWidth="10dp"
+                    android:layout_margin="5dp"
+                    android:background="@android:color/transparent"
+                    android:textSize="13dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/meeting_time"
+                    android:gravity="end"
+                    android:hint="填写日期"
+                    android:layout_weight="2"/>
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_time"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:background="@android:color/transparent"
+                    android:textSize="13dp"
+                    android:minWidth="8dp"
+                    android:gravity="end"
+                    android:hint="填写时间"
+                    android:layout_weight="1"/>
+            </RelativeLayout>
+
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#f0f0f0"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorWhite">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColor="#333333"
+                    android:textSize="18sp"
+                    android:padding="10dp"
+                    android:text="@string/meeting_abstract"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_abstract"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:inputType="textMultiLine"
+                    android:background="@android:color/transparent"
+                    android:textSize="13dp"
+                    android:gravity="end|center_vertical"
+                    android:lines="2"
+                    android:maxLength="40"
+                    android:maxLines="2"
+                    android:text=""
+                    android:hint="填写有关会议事项"
+                    android:layout_marginRight="10dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/meeting_attachment"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/meeting_attachment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

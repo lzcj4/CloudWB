@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 /sdcard/Android/data/com.techbridge.rt/Log-->
+    <property name="LOG_HOME" value="/sdcard/tanno" />
+
+  <!-- Create a file appender for a log in the application's data directory -->
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          <!--日志文件输出的文件名-->
+          <FileNamePattern>${LOG_HOME}/log(%d{yyyy-MM-dd}).log</FileNamePattern>
+          <!--日志文件保留天数-->
+          <MaxHistory>1</MaxHistory>
+     </rollingPolicy>
+    <!-- <file>/sdcard/log/foo.log</file> -->
+     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+     </encoder>
+
+     <!--日志文件最大的大小-->
+     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+       <MaxFileSize>2MB</MaxFileSize>
+     </triggeringPolicy>
+  </appender>
+
+  <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+    <encoder>
+      <pattern>%msg</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Write INFO (and higher-level) messages to the log file -->
+  <root level="TRACE">
+    <appender-ref ref="file" />
+  </root>
+
+   <root level="TRACE">
+    <appender-ref ref="logcat" />
+  </root>
+</configuration>
