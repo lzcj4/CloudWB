@@ -79,7 +79,7 @@ public class JYDZ_Comm_Protocol {
         commCmdType = DATAFEATURE_00;
         commCmdState = COMM_CMD_FALSE;
         commDataCtr = 0;
-        dataBuffer = new int[40];
+        dataBuffer = new int[256];
         mPointCount = 0;
         commLastStatus = COMM_STATUS_GET_HEADER;
         commdataFeatrue = DATAFEATURE_00;
@@ -252,9 +252,7 @@ public class JYDZ_Comm_Protocol {
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA:
-                    if (commDataCtr < dataBuffer.length - 1) {
-                        dataBuffer[commDataCtr++] = tempData[index];
-                    }
+                    dataBuffer[commDataCtr++] = tempData[index];
                     if (commDataCtr >= commLength - 2) {
                         commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM;
