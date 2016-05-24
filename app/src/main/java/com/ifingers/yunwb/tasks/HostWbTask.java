@@ -86,21 +86,27 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
         if (snapshotTrigger == 0)
             snapshotTrigger = 1;
 
-        Canvas tmp = holder.lockCanvas();
-        int w = tmp.getWidth();
-        int h = tmp.getHeight();
-        paintTool.init(w, h);
+        updateCanvasSize();
+        device.setDataHandler(this);
+    }
 
+    boolean isScreenVertical = true;
+
+    public void updateCanvasSize() {
+        Canvas surfaceCanvas = holder.lockCanvas();
+        int w = surfaceCanvas.getWidth();
+        int h = surfaceCanvas.getHeight();
+
+        paintTool.init(w, h);
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        tmp.drawColor(Color.WHITE);
-        holder.unlockCanvasAndPost(tmp);
+        isScreenVertical = !isScreenVertical;
+
+        surfaceCanvas.drawColor(Color.WHITE);
+        holder.unlockCanvasAndPost(surfaceCanvas);
 
         canvas = new Canvas(bitmap);
         canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
-
         canvas.drawColor(Color.WHITE);
-
-        device.setDataHandler(this);
     }
 
     @Override

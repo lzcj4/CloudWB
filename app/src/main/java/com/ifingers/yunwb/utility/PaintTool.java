@@ -11,8 +11,9 @@ import java.util.List;
 /**
  * Created by SFY on 2016/3/3.
  */
-public class     PaintTool {
+public class PaintTool {
     private static PaintTool ourInstance = new PaintTool();
+
     public static PaintTool getInstance() {
         return ourInstance;
     }
@@ -48,6 +49,14 @@ public class     PaintTool {
         paint.setStrokeWidth(penWidth);
     }
 
+    public void rotateLeft() {
+        DrawUtil.getInstance().rotateLeft();
+    }
+
+    public void rotateRight() {
+        DrawUtil.getInstance().rotateRight();
+    }
+
     public Paint getBitmapPaint() {
         return bitmapPaint;
     }
@@ -68,7 +77,9 @@ public class     PaintTool {
             float y = scaleY(point.getPointY());
             float w = scaleX(point.getPointWidth());
             float h = scaleY(point.getPointHeight());
-            canvas.drawCircle(x, y, (w + h) / 4, paint);
+            //canvas.drawCircle(x, y, (w + h) / 4, paint);
+            DrawUtil.getInstance().drawCircle(canvas, x, y, (w + h) / 4,
+                    config.getWhiteBoardWidth(), config.getWhiteBoardHeight(), paint);
         }
     }
 
@@ -76,7 +87,8 @@ public class     PaintTool {
         android.graphics.Path path = new android.graphics.Path();
         float x = scaleX(startPoint.getPointX());
         float y = scaleY(startPoint.getPointY());
-        path.moveTo(x, y);
+        // path.moveTo(x, y);
+        DrawUtil.getInstance().moveTo(path, x, y, config.getWhiteBoardWidth(), config.getWhiteBoardHeight());
         paint.setColor(startPoint.getSystemColor());
         paint.setStyle(Paint.Style.STROKE);
 
@@ -85,10 +97,8 @@ public class     PaintTool {
             y = scaleY(point.getPointY());
             float w = scaleX(point.getPointWidth());
             float h = scaleY(point.getPointHeight());
-
-            path.lineTo(x, y);
+            DrawUtil.getInstance().lineTo(path, x, y, config.getWhiteBoardWidth(), config.getWhiteBoardHeight());
         }
-
         canvas.drawPath(path, paint);
     }
 }

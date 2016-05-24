@@ -71,33 +71,6 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
     private WXService service = WXService.getInstance();
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.refresh, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                pullList();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mWakeLock.unlockAll();
-        TBConfManager.dispose();
-        DataLog.getInstance().close();
-    }
-
-    WakeLock mWakeLock;
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -145,14 +118,46 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
         mWakeLock.lockAll();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        dispatch(new Intent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mWakeLock.unlockAll();
+        TBConfManager.dispose();
+        DataLog.getInstance().close();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.refresh, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                pullList();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    WakeLock mWakeLock;
+
     private void startQRCodeScan() {
         IntentIntegrator integrator = new IntentIntegrator(ActionListActivity.this);
         integrator.setCaptureActivity(QRScannerActivity.class);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
         integrator.setOrientationLocked(false);
         integrator.initiateScan();
-        // CrashReport.testJavaCrash();
-//                deviceName = "test";
+//                deviceName = "HC-05";
 //                device.init(ActionListActivity.this, ActionListActivity.this);
 //                device.connect(deviceName);
     }
@@ -311,12 +316,6 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
                 globalConfig.getUserId(), "1", null, null, null);
 
         TBConfManager.joinConf(this.getApplicationContext(), this, displayMetrics, globalConfig.getTechBridgeAppKey(), joinJson, initJson);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        dispatch(new Intent());
     }
 
     private void pullList() {

@@ -34,6 +34,7 @@ import com.ifingers.yunwb.utility.ActivityCode;
 import com.ifingers.yunwb.utility.Constants;
 import com.ifingers.yunwb.utility.GuiHelper;
 import com.ifingers.yunwb.utility.LocalConferenceRecords;
+import com.ifingers.yunwb.utility.PaintTool;
 import com.ifingers.yunwb.utility.ServerAPI;
 import com.ifingers.yunwb.utility.ServerError;
 import com.ifingers.yunwb.utility.TBConfManager;
@@ -51,7 +52,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUpdater, SurfaceHolder.Callback {
+
     private String TAG = "WhiteBoardActivity";
     private FragmentManager mFragManager;
     private DrawerLayout mDrawerLayout;
@@ -81,80 +86,10 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
     private String techBridgeId;
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (isHost && hostWbTask == null) {
-            hostWbTask = new HostWbTask(meetingUrl, conferenceId, holder, WhiteBoardActivity.this, currentDate, meetingName, deviceName);
-            new Thread(hostWbTask).start();
-        } else if (!isHost && clientWbTask == null) {
-            // join a conference
-            clientWbTask = new ClientWbTask(conferenceId, password, TaskManagers.getInstance(),
-                    holder, WhiteBoardActivity.this, currentDate, meetingName);
-            new Thread(clientWbTask).start();
-        }
-        //NavUtils.navigateUpFromSameTask();
-
-        if (canvasFragment.isVisible()){
-            if (clientWbTask != null)
-                clientWbTask.forcePush();
-            else if (hostWbTask != null)
-                hostWbTask.forcePush();
-        }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.attach, menu);
-
-        audioStatusMenuItem = menu.findItem(R.id.action_sound);
-        if (isTechBridgeEnabled()) {
-            int resId = mute ? R.mipmap.mute_status : R.mipmap.unmute_status;
-            audioStatusMenuItem.setIcon(resId);
-        } else {
-            audioStatusMenuItem.setIcon(R.mipmap.mute_status);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                askForExitConference();
-                return true;
-            case R.id.action_attach:
-                canvasFragment.getSurfaceView().setVisibility(View.INVISIBLE);
-                mDrawerLayout.openDrawer(Gravity.RIGHT);
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED,
-                        GravityCompat.END);
-                return true;
-            case R.id.action_sound:
-                //check current status
-                if (isTechBridgeEnabled()) {
-                    int resId = !mute ? R.mipmap.mute_status : R.mipmap.unmute_status;
-                    audioStatusMenuItem.setIcon(resId);
-                    muteAudio(!mute);
-                } else {
-                    audioStatusMenuItem.setIcon(R.mipmap.mute_status);
-                }
-
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_white_board);
+        ButterKnife.bind(this);
 
         if (mData != null)
             return;
@@ -212,7 +147,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
             String folderPublic = folder + "/public/";
             File privateFolder = new File(folderPrivate);
             File publicFolder = new File(folderPublic);
-            if (!privateFolder.exists()){
+            if (!privateFolder.exists()) {
                 privateFolder.mkdirs();
             }
 
@@ -235,9 +170,9 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
 
             @Override
             public void onDrawerStateChanged(int newState) {
-                if (newState == DrawerLayout.STATE_DRAGGING){
+                if (newState == DrawerLayout.STATE_DRAGGING) {
                     canvasFragment.getSurfaceView().setVisibility(View.INVISIBLE);
-                } else if (newState == DrawerLayout.STATE_IDLE){
+                } else if (newState == DrawerLayout.STATE_IDLE) {
                     if (drawerOpened)
                         canvasFragment.getSurfaceView().setVisibility(View.INVISIBLE);
                     else {
@@ -269,7 +204,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
                 if (isTechBridgeEnabled()) {
                     ArrayList<CAntThumbnail> docs = TBConfManager.getDocList();
                     if (docs != null) {
-                        for(CAntThumbnail doc : docs){
+                        for (CAntThumbnail doc : docs) {
                             ImageListItem item = new ImageListItem(doc.filePath, doc.name, doc.docId, true);
                             mData.add(item);
                         }
@@ -341,6 +276,86 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
         muteAudio(mute);
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (isHost && hostWbTask == null) {
+            hostWbTask = new HostWbTask(meetingUrl, conferenceId, holder, WhiteBoardActivity.this, currentDate, meetingName, deviceName);
+            new Thread(hostWbTask).start();
+        } else if (!isHost && clientWbTask == null) {
+            // join a conference
+            clientWbTask = new ClientWbTask(conferenceId, password, TaskManagers.getInstance(),
+                    holder, WhiteBoardActivity.this, currentDate, meetingName);
+            new Thread(clientWbTask).start();
+        }
+        //NavUtils.navigateUpFromSameTask();
+
+        if (canvasFragment.isVisible()) {
+            if (clientWbTask != null)
+                clientWbTask.forcePush();
+            else if (hostWbTask != null)
+                hostWbTask.forcePush();
+        }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.attach, menu);
+
+        audioStatusMenuItem = menu.findItem(R.id.action_sound);
+        if (isTechBridgeEnabled()) {
+            int resId = mute ? R.mipmap.mute_status : R.mipmap.unmute_status;
+            audioStatusMenuItem.setIcon(resId);
+        } else {
+            audioStatusMenuItem.setIcon(R.mipmap.mute_status);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                askForExitConference();
+                return true;
+            case R.id.action_attach:
+                canvasFragment.getSurfaceView().setVisibility(View.INVISIBLE);
+                mDrawerLayout.openDrawer(Gravity.RIGHT);
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED,
+                        GravityCompat.END);
+                return true;
+            case R.id.action_sound:
+                //check current status
+                if (isTechBridgeEnabled()) {
+                    int resId = !mute ? R.mipmap.mute_status : R.mipmap.unmute_status;
+                    audioStatusMenuItem.setIcon(resId);
+                    muteAudio(!mute);
+                } else {
+                    audioStatusMenuItem.setIcon(R.mipmap.mute_status);
+                }
+
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick({R.id.layout_rotate_left, R.id.layout_rotate_right})
+    public void viewportRotate(View view) {
+        if (view.getId() == R.id.layout_rotate_left) {
+            PaintTool.getInstance().rotateLeft();
+        } else {
+            PaintTool.getInstance().rotateRight();
+        }
+    }
+
     public void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         if (show)
@@ -369,7 +384,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
         }
     }
 
-    private void snapshot(){
+    private void snapshot() {
         try {
             // image naming and path  to include sd card  appending name you choose for file
             String folder = WhiteBoardActivity.this.getApplicationInfo().dataDir + "/history/" + currentDate + "/" + conferenceId + "_" + meetingName;
@@ -388,7 +403,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
                 bitmap = hostWbTask.getData();
 
             File imageFile = new File(path);
-            while (imageFile.exists()){
+            while (imageFile.exists()) {
                 snapshotIndex++;
                 path = folder + "snapshot" + snapshotIndex + ".png";
                 imageFile = new File(path);
@@ -406,7 +421,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
                 uploadSnapshot(bitmap, "snapshot" + snapshotIndex);
             }
 
-            String msg = isHost? "已保存到公共会议记录中" : "已保存到个人会议记录中";
+            String msg = isHost ? "已保存到公共会议记录中" : "已保存到个人会议记录中";
             Toast.makeText(WhiteBoardActivity.this, msg, Toast.LENGTH_SHORT).show();
             snapshotIndex++;
         } catch (IOException e) {
@@ -439,7 +454,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
             }
         }
 
-        if (hostWbTask != null){
+        if (hostWbTask != null) {
             hostWbTask.stop();
             hostWbTask = null;
             if (techBridgeId != null) {
@@ -492,8 +507,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
     public void handleModelMsg(TaskMsg msg, ICommonTask task) {
         if (task == null) {
             Toast.makeText(WhiteBoardActivity.this, getResources().getString(R.string.prompt_upload_snapshot_failure), Toast.LENGTH_LONG).show();
-        }
-        else if (task instanceof ClientWbTask) {
+        } else if (task instanceof ClientWbTask) {
             if (msg == TaskMsg.ConferenceFinished) {
                 if (techBridgeId != null) {
                     TBConfManager.leaveConf(false);
@@ -506,14 +520,13 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
             } else if (msg == TaskMsg.LostFrame) {
                 Toast.makeText(this, getResources().getString(R.string.server_connection_down), Toast.LENGTH_LONG).show();
             }
-        } else if (msg == TaskMsg.AttachmentSelected){
+        } else if (msg == TaskMsg.AttachmentSelected) {
             AttachmentFragment frag = (AttachmentFragment) mFragManager.findFragmentById(R.id.ly_content);
-            frag.updateImage((String)task.getData());
+            frag.updateImage((String) task.getData());
         } else if (msg == TaskMsg.SdkAttachmentSelected) {
-            TBConfManager.showDoc((FrameLayout)findViewById(R.id.ly_content), Integer.parseInt((String)task.getData()));
-        }
-        else if (task instanceof HostWbTask){
-            if (msg == TaskMsg.WhiteboardHwSnapshot){
+            TBConfManager.showDoc((FrameLayout) findViewById(R.id.ly_content), Integer.parseInt((String) task.getData()));
+        } else if (task instanceof HostWbTask) {
+            if (msg == TaskMsg.WhiteboardHwSnapshot) {
                 snapshot();
             } else if (msg == TaskMsg.ConferenceFinished) {
                 if (techBridgeId != null) {
@@ -549,7 +562,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
             TBConfManager.hideDoc();
 //            ImageListItem item = (ImageListItem)mDrawerList.getItemAtPosition(position);
 //            attachmentFragment.updateImage(item.getmIconResPath());
-            ImageListItem item = (ImageListItem)mDrawerList.getItemAtPosition(position);
+            ImageListItem item = (ImageListItem) mDrawerList.getItemAtPosition(position);
 
             if (item.getShowFromSDK())
                 mFragManager.beginTransaction().replace(R.id.ly_content, blankFragment).commit();

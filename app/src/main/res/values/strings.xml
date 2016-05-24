@@ -20,6 +20,8 @@
     <string name="action_record">历史会议</string>
     <string name="action_more">更多</string>
     <string name="action_files">文件</string>
+    <string name="action_rotate_left">左转</string>
+    <string name="action_rotate_right">右转</string>
     <string name="confirm_exit_meeting">确认退出会议?</string>
     <string name="confirm_end_meeting">确认结束会议?</string>
     <string name="prompt_title_info">提示</string>

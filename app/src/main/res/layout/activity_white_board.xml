@@ -16,10 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
+            android:background="#F0F0F0"
             android:gravity="center"
-            android:paddingTop="5dp"
             android:orientation="horizontal"
-            android:background="#F0F0F0">
+            android:paddingTop="5dp">
 
             <LinearLayout
                 android:id="@+id/wb_members"
@@ -38,9 +38,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:layout_marginTop="5dp"
                     android:text="@string/wb_members"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -49,9 +49,9 @@
                 android:id="@+id/action_snapshot"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -62,9 +62,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:layout_marginTop="5dp"
                     android:text="@string/action_snapshot"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -86,10 +86,58 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:layout_marginTop="5dp"
                     android:text="@string/action_files"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_rotate_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/rotate_left" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/action_rotate_left"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_rotate_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/rotate_right" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/action_rotate_right"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
@@ -99,6 +147,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/wb_tab_bar">
+
             <FrameLayout
                 android:id="@+id/ly_content"
                 android:layout_width="match_parent"
@@ -111,9 +160,9 @@
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            android:layout_centerInParent="true"/>
+            android:visibility="gone" />
     </RelativeLayout>
 
     <ListView
