@@ -46,8 +46,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -91,6 +91,7 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
                     holder, WhiteBoardActivity.this, currentDate, meetingName);
             new Thread(clientWbTask).start();
         }
+        //NavUtils.navigateUpFromSameTask();
 
         if (canvasFragment.isVisible()){
             if (clientWbTask != null)

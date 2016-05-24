@@ -23,11 +23,8 @@ import com.ifingers.yunwb.utility.LocalConferenceRecords;
 import com.ifingers.yunwb.utility.PaintTool;
 import com.ifingers.yunwb.utility.ServerAPI;
 import com.ifingers.yunwb.utility.ServerError;
-import com.ifingers.yunwb.utility.SingleLogger;
 import com.ifingers.yunwb.utility.WbMessager;
 import com.ifingers.yunwb.utility.WhiteboardTaskContext;
-
-import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,11 +40,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
- *
  * Created by Macoo on 2/24/2016.
  */
 public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDeviceDataHandler, IWBDevice.WBDeviceStatusHandler {
@@ -74,7 +69,9 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
     private ConferenceDao conferenceDao = new ConferenceDao();
     private String deviceName;
 
-    public HostWbTask(String url, String conferenceId, SurfaceHolder holder, WhiteBoardActivity activity, String date, String name, String deviceName) {
+    public HostWbTask(String url, String conferenceId, SurfaceHolder holder,
+                      WhiteBoardActivity activity, String date,
+                      String name, String deviceName) {
         this.meetingUrl = url;
         this.conferenceId = conferenceId;
         this.holder = holder;
@@ -188,8 +185,7 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
                             failureCount++;
                         }
                     }
-                }
-                else {
+                } else {
                     for (Path path : paths.values()) {
                         accumulatedPath.add(path);
                     }
@@ -225,7 +221,8 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
                     failureCount++;
                 }
 
-                if (roundSinceLastSnapshot == 0){
+                // TODO: 2016/5/11 every 30 seconds create a snapshot??? 
+                if (roundSinceLastSnapshot == 0) {
                     Log.i(TAG, "post snapshot");
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
@@ -247,7 +244,7 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
                     do {
                         handleNetworkException();
                     }
-                    while(!networkExceptionHandled);
+                    while (!networkExceptionHandled);
                     failureCount = 0;
                 }
             } catch (InterruptedException e) {
@@ -423,7 +420,7 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
         pathCache.put(points, false);
     }
 
-    private void renderBitmap(){
+    private void renderBitmap() {
         //render on surface
         Canvas currentBuffer = holder.lockCanvas();
         if (currentBuffer != null) {
@@ -465,7 +462,7 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
                     }
                 }
 
-                if (!imageSaved){
+                if (!imageSaved) {
                     try {
                         URL url = new URL(image);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -490,8 +487,7 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
         }
     }
 
-    class PathCache
-    {
+    class PathCache {
         private HashMap<Integer, Path> cache = new HashMap<>();
         private Set<Integer> doneSet = new HashSet<>();
         private Object lock = new Object();

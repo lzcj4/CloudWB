@@ -48,7 +48,7 @@ public class CanvasFragment extends Fragment {
         if (view == null)
             view = inflater.inflate(R.layout.fragment_canvas, container, false);
 
-        ViewTreeObserver vto = view.getViewTreeObserver();
+        final ViewTreeObserver vto = view.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {

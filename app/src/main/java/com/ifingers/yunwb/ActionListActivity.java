@@ -42,10 +42,12 @@ import com.ifingers.yunwb.services.WXService;
 import com.ifingers.yunwb.utility.ActivityCode;
 import com.ifingers.yunwb.utility.Constants;
 import com.ifingers.yunwb.utility.CrashHandler;
+import com.ifingers.yunwb.utility.DataLog;
 import com.ifingers.yunwb.utility.GuiHelper;
 import com.ifingers.yunwb.utility.ServerAPI;
 import com.ifingers.yunwb.utility.ServerError;
 import com.ifingers.yunwb.utility.TBConfManager;
+import com.ifingers.yunwb.utility.WakeLock;
 import com.ifingers.yunwb.utility.WhiteboardTaskContext;
 import com.tb.conf.api.struct.CTBUserEx;
 
@@ -88,8 +90,12 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mWakeLock.unlockAll();
         TBConfManager.dispose();
+        DataLog.getInstance().close();
     }
+
+    WakeLock mWakeLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,11 +122,14 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                IntentIntegrator integrator = new IntentIntegrator(ActionListActivity.this);
-                integrator.setCaptureActivity(QRScannerActivity.class);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-                integrator.setOrientationLocked(false);
-                integrator.initiateScan();
+//                IntentIntegrator integrator = new IntentIntegrator(ActionListActivity.this);
+//                integrator.setCaptureActivity(QRScannerActivity.class);
+//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+//                integrator.setOrientationLocked(false);
+//                integrator.initiateScan();
+                deviceName = "HC-05";
+                device.init(ActionListActivity.this, ActionListActivity.this);
+                device.connect(deviceName);
             }
         });
 
@@ -143,6 +152,9 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
                 integrator.setOrientationLocked(false);
                 integrator.initiateScan();
+//                deviceName = "test";
+//                device.init(ActionListActivity.this, ActionListActivity.this);
+//                device.connect(deviceName);
             }
         });
 
@@ -161,6 +173,8 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
         popupWindow.setBackgroundDrawable(new ColorDrawable(00000));
 
         dispatch(getIntent());
+        mWakeLock = new WakeLock(this);
+        mWakeLock.lockAll();
     }
 
     private void dispatch(Intent it) {
@@ -246,9 +260,11 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
             }
         } else if (requestCode == BLCommService.REQUEST_ENABLE_BT) {
             if (resultCode == RESULT_OK) {
+                //// TODO: 2016/5/11  Why is camera not bluetooth?
                 if (ContextCompat.checkSelfPermission(ActionListActivity.this,
                         Manifest.permission.CAMERA)
                         == PackageManager.PERMISSION_GRANTED)
+
                     device.connect(deviceName);
                 else
                     Toast.makeText(getApplicationContext(),
@@ -452,7 +468,7 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
 
         @Override
         public int getCount() {
-            return data == null? 0 : data.size();
+            return data == null ? 0 : data.size();
         }
 
         @Override

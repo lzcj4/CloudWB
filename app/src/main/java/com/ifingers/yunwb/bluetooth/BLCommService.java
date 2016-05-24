@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -117,9 +118,10 @@ public class BLCommService {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI Activity
-                    switch (mProtocol.handlerIncomeData(bytes, buffer)) {
+                    byte[] data = Arrays.copyOfRange(buffer, 0, bytes);
+                    switch (mProtocol.handlerIncomeData(bytes, data)) {
                         case JYDZ_Comm_Protocol.COMM_STATUS_CHANGE_FORMAT:
-                            byte[] CmdChangeFeatrue = mProtocol.ChangeDataFeatrue();
+                            byte[] CmdChangeFeatrue = mProtocol.changeDataFeature();
                             if (CmdChangeFeatrue != null) {
                                 write(CmdChangeFeatrue);
                             }
