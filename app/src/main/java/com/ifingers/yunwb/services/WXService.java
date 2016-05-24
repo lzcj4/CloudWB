@@ -1,16 +1,15 @@
 package com.ifingers.yunwb.services;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ifingers.yunwb.MeetingWizardActivity;
-import com.ifingers.yunwb.WXLoginActivity;
 import com.ifingers.yunwb.utility.ServerAPI;
 import com.ifingers.yunwb.utility.ServerError;
 import com.ifingers.yunwb.utility.WhiteboardTaskContext;
@@ -33,6 +32,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -70,16 +70,35 @@ public class WXService implements IWXAPIEventHandler {
             this.context = context;
             wxapi = WXAPIFactory.createWXAPI(context, wxAppKey, true);
             wxapi.registerApp(wxAppKey);
+            isWXInstalled(context);
             try {
                 //enable https with unknown cert
                 SSLContext sc = SSLContext.getInstance("TLS");
                 sc.init(null, new TrustManager[]{new TrustManager()}, new SecureRandom());
                 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
                 HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier());
-            } catch (Exception e ) {
+            } catch (Exception e) {
                 Log.e(tag, e.toString());
             }
         }
+    }
+
+    /**
+     * 检查微信是否安装在手机上
+     * @param context
+     * @return
+     */
+    public boolean isWXInstalled(Context context) {
+        PackageManager pm = context.getPackageManager();
+        List<PackageInfo> list = pm.getInstalledPackages(0);
+        boolean result = false;
+        for (PackageInfo item : list) {
+            if (item.packageName.contains("com.tencent.mm")) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
     public void handleIntent(Intent it) {
@@ -193,8 +212,7 @@ public class WXService implements IWXAPIEventHandler {
 
             if (ok) {
                 startRefreshTimer();
-            }
-            else {
+            } else {
                 if (errMsg != null) {
                     Toast.makeText(context, errMsg, Toast.LENGTH_LONG).show();
                 }
@@ -280,8 +298,7 @@ public class WXService implements IWXAPIEventHandler {
         }
     }
 
-    class WXUserInfoResult
-    {
+    class WXUserInfoResult {
         private String openid;
         private String nickname;
         private int sex;
@@ -338,8 +355,7 @@ public class WXService implements IWXAPIEventHandler {
         }
     }
 
-    class WXTokenResult
-    {
+    class WXTokenResult {
         private String access_token;
         private int expires_in;
         private String refresh_token;
