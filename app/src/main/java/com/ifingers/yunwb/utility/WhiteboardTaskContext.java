@@ -2,20 +2,13 @@ package com.ifingers.yunwb.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Paint;
 import android.os.StrictMode;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.ifingers.yunwb.dao.MeetingDao;
 import com.ifingers.yunwb.dao.UserDao;
 import com.ifingers.yunwb.services.IWBDevice;
 import com.ifingers.yunwb.services.WBDevice;
-import com.ifingers.yunwb.services.WBMockDevice;
-
-import tb.confui.module.TBConfKit;
 
 /**
  * store task context
@@ -44,8 +37,10 @@ public class WhiteboardTaskContext {
     private String techBridgeAppKey = "test";
     private String techBridgeSite = "121.40.94.192";
     private IWBDevice wbDevice = WBDevice.getInstance();
-    private int ruberMaxSize = 2812 * 4993;  //80mm / 932mm * 32767,  80mm / 525mm * 32767
-    private int ruberMinSize = 1406 * 2496;  //40mm / 932mm * 32767,  40mm / 525mm * 32767
+    //private IWBDevice wbDevice = WBMockDevice.getInstance();
+    // TODO: 2016/5/11   how to define the pen and rubber size??
+    private int rubberMaxSize = 2812 * 4993;  //80mm / 932mm * 32767,  80mm / 525mm * 32767
+    private int rubberMinSize = 1406 * 2496;  //40mm / 932mm * 32767,  40mm / 525mm * 32767
     private int penMaxSize = 360 * 630;      //10mm / 932mm * 32767,  10mm / 525mm * 32767
     private int penMinSize = 144 * 252;      //4mm / 932mm * 32767,  4mm / 525mm * 32767
     private float penWidth = 4;               //pixel
@@ -72,7 +67,7 @@ public class WhiteboardTaskContext {
 
     public boolean DEBUG = false;
 
-    private WhiteboardTaskContext(){
+    private WhiteboardTaskContext() {
     }
 
     public void init(Context context) {
@@ -93,8 +88,8 @@ public class WhiteboardTaskContext {
             instance.setWxAppSecret(config.getWxAppSecret());
             instance.setWxState(config.getWxAppState());
             instance.setPostHeartbeatInterval(config.getPostHeartbeatInterval());
-            instance.setRuberMaxSize(config.getRuberMaxSize());
-            instance.setRuberMinSize(config.getRuberMinSize());
+            instance.setRubberMaxSize(config.getRuberMaxSize());
+            instance.setRubberMinSize(config.getRuberMinSize());
             instance.setPenMaxSize(config.getPenMaxSize());
             instance.setPenMinSize(config.getPenMinSize());
             instance.setPenWidth(config.getPenWidth());
@@ -106,7 +101,7 @@ public class WhiteboardTaskContext {
         }
     }
 
-    public void claerUserInfoAtLocal() {
+    public void clearUserInfoAtLocal() {
         SharedPreferences sp = context.getSharedPreferences(USER_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();
@@ -197,20 +192,20 @@ public class WhiteboardTaskContext {
         this.whConverse = whConverse;
     }
 
-    public int getRuberMaxSize() {
-        return ruberMaxSize;
+    public int getRubberMaxSize() {
+        return rubberMaxSize;
     }
 
-    public void setRuberMaxSize(int ruberMaxSize) {
-        this.ruberMaxSize = ruberMaxSize;
+    public void setRubberMaxSize(int rubberMaxSize) {
+        this.rubberMaxSize = rubberMaxSize;
     }
 
-    public int getRuberMinSize() {
-        return ruberMinSize;
+    public int getRubberMinSize() {
+        return rubberMinSize;
     }
 
-    public void setRuberMinSize(int ruberMinSize) {
-        this.ruberMinSize = ruberMinSize;
+    public void setRubberMinSize(int rubberMinSize) {
+        this.rubberMinSize = rubberMinSize;
     }
 
     public int getPenMaxSize() {
@@ -313,9 +308,13 @@ public class WhiteboardTaskContext {
         this.postHeartbeatInterval = postHeartbeatInterval;
     }
 
-    public float getScaleFactorX() { return scaleFactorX; }
+    public float getScaleFactorX() {
+        return scaleFactorX;
+    }
 
-    public float getScaleFactorY() { return scaleFactorY; }
+    public float getScaleFactorY() {
+        return scaleFactorY;
+    }
 
     public int getWhiteBoardHeight() {
         return whiteBoardHeight;
@@ -389,16 +388,16 @@ public class WhiteboardTaskContext {
         this.renderSmooth = renderSmooth;
     }
 
-    public static WhiteboardTaskContext getInstance(){
-        if (instance == null){
-            synchronized (WhiteboardTaskContext.class){
+    public static WhiteboardTaskContext getInstance() {
+        if (instance == null) {
+            synchronized (WhiteboardTaskContext.class) {
                 if (instance == null) {
                     instance = new WhiteboardTaskContext();
                 }
             }
         }
 
-        return  instance;
+        return instance;
     }
 
     public boolean isHost() {

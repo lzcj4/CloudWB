@@ -3,8 +3,6 @@ package com.ifingers.yunwb.utility;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
-import android.util.Log;
 
 import com.ifingers.yunwb.dao.TouchPoint;
 
@@ -13,7 +11,7 @@ import java.util.List;
 /**
  * Created by SFY on 2016/3/3.
  */
-public class PaintTool {
+public class     PaintTool {
     private static PaintTool ourInstance = new PaintTool();
     public static PaintTool getInstance() {
         return ourInstance;

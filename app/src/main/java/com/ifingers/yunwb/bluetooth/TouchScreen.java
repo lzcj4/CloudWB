@@ -41,6 +41,7 @@ public class TouchScreen {
             parsedPoint.pointHeight = dataBuffer[kk * dataSize + 8] + dataBuffer[kk * dataSize + 9] * 256;
             parsedPoint.pointArea = parsedPoint.pointWidth * parsedPoint.pointHeight;
 
+            // TODO: 2016/5/11  Ignore duplicate points with same id ??
             //only keeps last point for one id at one time read
             //because IRMT TEST does this way.
             //and hardware points are not accurate. Many too closed point cause the bad result

@@ -1,7 +1,6 @@
 package com.ifingers.yunwb.services;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.ifingers.yunwb.dao.Path;
 import com.ifingers.yunwb.dao.TouchPoint;
@@ -65,7 +64,8 @@ public class WBMockDevice implements IWBDevice {
             @Override
             public void run() {
                 try {
-                    mockNothing();
+                    //mockNothing();
+                    mock2Path();
                 } catch (Exception e) {
                 }
             }
@@ -214,6 +214,7 @@ public class WBMockDevice implements IWBDevice {
     private void mock2Path() throws Exception {
         Thread.sleep(1000);
         statusHandler.onConnected();
+        totalStep = 200;
 
         if (timer != null) {
             timer.cancel();;
