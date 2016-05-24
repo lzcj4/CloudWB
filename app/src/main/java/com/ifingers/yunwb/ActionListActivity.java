@@ -108,7 +108,6 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
             finish();
             return;
         }
-
         setContentView(R.layout.activity_action_list);
 
         globalConfig.init(this);
@@ -119,52 +118,21 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
         pullList();
 
         View createButton = findViewById(R.id.action_launch_conf);
-        createButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                IntentIntegrator integrator = new IntentIntegrator(ActionListActivity.this);
-//                integrator.setCaptureActivity(QRScannerActivity.class);
-//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-//                integrator.setOrientationLocked(false);
-//                integrator.initiateScan();
-                deviceName = "HC-05";
-                device.init(ActionListActivity.this, ActionListActivity.this);
-                device.connect(deviceName);
-            }
-        });
+        createButton.setOnClickListener((view) -> startQRCodeScan());
 
         View recordButton = findViewById(R.id.action_record);
-        recordButton.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent it = new Intent(ActionListActivity.this, ConferenceRecord.class);
-                                                startActivity(it);
-                                            }
-                                        }
-        );
-
-        View create = findViewById(R.id.txt_create);
-        create.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                IntentIntegrator integrator = new IntentIntegrator(ActionListActivity.this);
-                integrator.setCaptureActivity(QRScannerActivity.class);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-                integrator.setOrientationLocked(false);
-                integrator.initiateScan();
-//                deviceName = "test";
-//                device.init(ActionListActivity.this, ActionListActivity.this);
-//                device.connect(deviceName);
-            }
+        recordButton.setOnClickListener((view) -> {
+            Intent it = new Intent(ActionListActivity.this, ConferenceRecord.class);
+            startActivity(it);
         });
 
+        View create = findViewById(R.id.txt_create);
+        create.setOnClickListener((view) -> startQRCodeScan());
+
         View more = findViewById(R.id.action_more);
-        more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(ActionListActivity.this, HelperMainActivity.class);
-                startActivity(it);
-            }
+        more.setOnClickListener((view) -> {
+            Intent it = new Intent(ActionListActivity.this, HelperMainActivity.class);
+            startActivity(it);
         });
         View popupView = getLayoutInflater().inflate(R.layout.action_password_input, null);
         popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
@@ -175,6 +143,18 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
         dispatch(getIntent());
         mWakeLock = new WakeLock(this);
         mWakeLock.lockAll();
+    }
+
+    private void startQRCodeScan() {
+        IntentIntegrator integrator = new IntentIntegrator(ActionListActivity.this);
+        integrator.setCaptureActivity(QRScannerActivity.class);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+        integrator.setOrientationLocked(false);
+        integrator.initiateScan();
+        // CrashReport.testJavaCrash();
+//                deviceName = "test";
+//                device.init(ActionListActivity.this, ActionListActivity.this);
+//                device.connect(deviceName);
     }
 
     private void dispatch(Intent it) {
@@ -262,7 +242,7 @@ public class ActionListActivity extends AppCompatActivity implements IWBDevice.W
             if (resultCode == RESULT_OK) {
                 //// TODO: 2016/5/11  Why is camera not bluetooth?
                 if (ContextCompat.checkSelfPermission(ActionListActivity.this,
-                        Manifest.permission.CAMERA)
+                        Manifest.permission.BLUETOOTH)
                         == PackageManager.PERMISSION_GRANTED)
 
                     device.connect(deviceName);
