@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.ifingers.yunwb.dao.ConferenceDao;
 import com.ifingers.yunwb.dao.ImageListItem;
 import com.ifingers.yunwb.tasks.ClientWbTask;
 import com.ifingers.yunwb.tasks.HostWbTask;
@@ -115,6 +116,12 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
         //args.putInt(CanvasFragment., position);
         canvasFragment.setArguments(args);
 
+        waitingBar = (ProgressBar) findViewById(R.id.waiting_progress);
+
+        Intent it = getIntent();
+
+        isHost = it.getBooleanExtra(Constants.HostKey, false);
+
         attachmentFragment = new AttachmentFragment();
         Bundle argsAttach = new Bundle();
         attachmentFragment.setArguments(argsAttach);
@@ -126,12 +133,6 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
         mFragManager.beginTransaction()
                 .replace(R.id.ly_content, canvasFragment)
                 .commit();
-
-        waitingBar = (ProgressBar) findViewById(R.id.waiting_progress);
-
-        Intent it = getIntent();
-
-        isHost = it.getBooleanExtra(Constants.HostKey, false);
         conferenceId = getIntent().getStringExtra(Constants.ConferenceIdKey);
         meetingUrl = getIntent().getStringExtra(Constants.UrlKey);
         password = getIntent().getStringExtra(Constants.PasswordKey);
@@ -436,6 +437,11 @@ public class WhiteBoardActivity extends AppCompatActivity implements IViewDataUp
         if (requestCode == ActivityCode.REQUEST_CONFERENCE_INFO) {
             if (resultCode == ActivityCode.RESULT_EXIT_CONFERENCE) {
                 exitConference();
+            } else {
+                //always update title when back from conference info activity
+                ConferenceDao dao = new ConferenceDao();
+                dao.fill(globalConfig.getMeetingInfo().getConference());
+                GuiHelper.setActionBarTitle(this, dao.getName());
             }
         }
     }

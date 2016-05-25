@@ -37,4 +37,8 @@ public class MeetingDao {
     public HashMap<String, Object> getConference() {
         return conference;
     }
+
+    public void setConference(HashMap<String, Object> map) {
+        conference = map;
+    }
 }

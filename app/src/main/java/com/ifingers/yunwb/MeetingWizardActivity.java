@@ -5,9 +5,11 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -62,6 +64,32 @@ public class MeetingWizardActivity extends AppCompatActivity implements ITBConfK
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.wizard, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        String title = getResources().getString(R.string.prompt_title_info);
+        String content = "确认终止创建会议?";
+        String no = getResources().getString(R.string.prompt_no);
+        String yes = getResources().getString(R.string.prompt_yes);
+        WbMessager.show(this, title, content, no, yes,
+                //no click
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                },
+                //yes click
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        setResult(ActivityCode.RESULT_CANCEL_CONFERENCE);
+                        finish();
+                    }
+                }
+        );
     }
 
     @Override
@@ -151,6 +179,10 @@ public class MeetingWizardActivity extends AppCompatActivity implements ITBConfK
             item = (AutoCompleteTextView)MeetingWizardActivity.this.findViewById(R.id.meeting_time);
             item.setText(datetime[1]);
         }
+
+        AutoCompleteTextView password = (AutoCompleteTextView)findViewById(R.id.meeting_password);
+        password.setTypeface(Typeface.DEFAULT);
+        password.setTransformationMethod(new PasswordTransformationMethod());
 
         AutoCompleteTextView meeting_name = (AutoCompleteTextView)findViewById(R.id.meeting_name);
         meeting_name.requestFocus();

@@ -12,7 +12,6 @@ import android.content.IntentFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -31,9 +30,6 @@ public class BLCommService {
         mParentActivity = activity;
         mIrTouchInterface = newInterface;
 
-        mTouchScreen = new TouchScreen();
-        mProtocol = new JYDZ_Comm_Protocol(mTouchScreen);
-
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
     }
@@ -47,6 +43,9 @@ public class BLCommService {
 
     public void connect(String searchPattern) {
         if (mBtAdapter.isEnabled()) {
+            mTouchScreen = new TouchScreen();
+            mProtocol = new JYDZ_Comm_Protocol(mTouchScreen, mIrTouchInterface);
+
             mSearchPattern = searchPattern;
             // Register for broadcasts when a device is discovered
             IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -118,23 +117,14 @@ public class BLCommService {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI Activity
-                    byte[] data = Arrays.copyOfRange(buffer, 0, bytes);
-                    switch (mProtocol.handlerIncomeData(bytes, data)) {
+                    switch (mProtocol.handlerIncomeData(bytes, buffer)) {
                         case JYDZ_Comm_Protocol.COMM_STATUS_CHANGE_FORMAT:
-                            byte[] CmdChangeFeatrue = mProtocol.changeDataFeature();
+                            byte[] CmdChangeFeatrue = mProtocol.ChangeDataFeatrue();
                             if (CmdChangeFeatrue != null) {
                                 write(CmdChangeFeatrue);
                             }
                             break;
                         case JYDZ_Comm_Protocol.COMM_STATUS_DATA_GET_OK:
-                            if (mTouchScreen.mTouchDownList.size() > 0) {
-                                mIrTouchInterface.onTouchDown(mTouchScreen.mTouchDownList);
-                                mTouchScreen.mTouchDownList.clear();
-                            }
-                            if (mTouchScreen.mTouchUpList.size() > 0) {
-                                mIrTouchInterface.onTouchUp(mTouchScreen.mTouchUpList);
-                                mTouchScreen.mTouchUpList.clear();
-                            }
                             break;
                         case JYDZ_Comm_Protocol.COMM_STATUS_GESTURE_GET:
                             mIrTouchInterface.onGestureGet(mProtocol.dataBuffer[0]);

@@ -45,6 +45,7 @@ import com.ifingers.yunwb.dao.MeetingDao;
 import com.ifingers.yunwb.dao.UserDao;
 import com.ifingers.yunwb.services.WXService;
 import com.ifingers.yunwb.utility.ActivityCode;
+import com.ifingers.yunwb.utility.Constants;
 import com.ifingers.yunwb.utility.GuiHelper;
 import com.ifingers.yunwb.utility.ServerAPI;
 import com.ifingers.yunwb.utility.ServerError;
@@ -265,8 +266,22 @@ public class ConferenceInfoActivity extends AppCompatActivity {
         protected Object doInBackground(Object[] params) {
             MeetingDao meetingDao = config.getMeetingInfo();
             if (meetingDao != null) {
-                conference = new ConferenceDao();
+                //try get conference info from server immediately
+                final ServerAPI.ConferenceData data = ServerAPI.getInstance().requestConferenceInfo(conferenceId, password);
+                if (data.getCode() == ServerError.OK) {
+                    //if ok, update the data in meeting dao
+                    meetingDao.setConference(data.getConference());
+                } else {
+                    ConferenceInfoActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Resources res = ConferenceInfoActivity.this.getResources();
+                            Toast.makeText(ConferenceInfoActivity.this, String.format(res.getString(R.string.network_slow_code), data.getCode()), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
 
+                conference = new ConferenceDao();
                 conference.fill(meetingDao.getConference());
                 String hostId = conference.getHostId();
                 isHost = hostId.equals(config.getUserInfo().get_id());

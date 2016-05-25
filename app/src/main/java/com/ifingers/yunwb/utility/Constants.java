@@ -11,4 +11,5 @@ public class Constants {
     public static final String NameKey = "name";
     public static final String DeviceNameKey = "deviceName";
     public static final String TechBridgeIdKey = "techBridgeId";
+    public static final String TitleKey = "title";
 }

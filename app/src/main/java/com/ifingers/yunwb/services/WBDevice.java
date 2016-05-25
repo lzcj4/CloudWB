@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ *
  * Created by SFY on 2016/2/21.
  */
 public class WBDevice implements IWBDevice {
@@ -70,7 +71,6 @@ public class WBDevice implements IWBDevice {
                         Map<Integer, List<TouchPoint>> map = triage(list, true);
                         Map<Integer, List<TouchPoint>> moveMap = new HashMap<>();
                         Map<Integer, List<TouchPoint>> downMap = new HashMap<>();
-                        // TODO: 2016/5/11 how to identify touch type is down or move?
                         for (Map.Entry<Integer, List<TouchPoint>> entry : map.entrySet()) {
                             int id = entry.getKey();
                             List<TouchPoint> path = entry.getValue();
@@ -82,11 +82,12 @@ public class WBDevice implements IWBDevice {
                             }
                         }
 
-                        if (moveMap.size() > 0) {
-                            dataHandler.onTouchMove(moveMap);
-                        }
                         if (downMap.size() > 0) {
                             dataHandler.onTouchDown(downMap);
+                        }
+
+                        if (moveMap.size() > 0) {
+                            dataHandler.onTouchMove(moveMap);
                         }
                     }
                 }
@@ -154,11 +155,11 @@ public class WBDevice implements IWBDevice {
     private TouchPoint createPointFrom(TouchScreen.TouchPoint p) {
         TouchPoint tp = new TouchPoint();
         if ((p.pointArea >= ruberMinSize && p.pointArea <= ruberMaxSize))
-            tp.setPointColor((byte) 3);
+            tp.setPointColor((byte)3);
         else
-            tp.setPointColor((byte) 1);
+            tp.setPointColor((byte)1);
         tp.setPointId(p.pointId);
-        if (config.isWhConverse()) {
+        if(config.isWhConverse()) {
             tp.setPointHeight((short) p.pointWidth);
             tp.setPointWidth((short) p.pointHeight);
         } else {

@@ -90,8 +90,6 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
         device.setDataHandler(this);
     }
 
-    boolean isScreenVertical = true;
-
     public void updateCanvasSize() {
         Canvas surfaceCanvas = holder.lockCanvas();
         int w = surfaceCanvas.getWidth();
@@ -99,7 +97,6 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
 
         paintTool.init(w, h);
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        isScreenVertical = !isScreenVertical;
 
         surfaceCanvas.drawColor(Color.WHITE);
         holder.unlockCanvasAndPost(surfaceCanvas);
@@ -542,6 +539,7 @@ public class HostWbTask implements Runnable, ICommonTask<Bitmap>, IWBDevice.WBDe
                     if (!doneSet.contains(id)) {
                         Path path = entry.getValue();
                         Path newPath = new Path();
+                        newPath.setGroupId(path.getGroupId());
                         newPath.addPoint(path.getPoints().getLast());
                         newCahce.put(id, newPath);
                     } else {

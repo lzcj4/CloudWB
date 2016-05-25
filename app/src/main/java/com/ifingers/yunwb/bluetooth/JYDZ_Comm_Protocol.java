@@ -1,14 +1,7 @@
 package com.ifingers.yunwb.bluetooth;
 //import android.util.Log;
 
-import android.text.TextUtils;
 import android.util.Log;
-
-import com.ifingers.yunwb.utility.DataLog;
-import com.ifingers.yunwb.utility.HexUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by Administrator on 2015/10/30.
@@ -63,7 +56,7 @@ public class JYDZ_Comm_Protocol {
     private int commLength;
     private int commCmdType;
     private int commCmdState;
-    private byte commdataFeatrue;
+    private int commdataFeatrue;
     private int commControlCode;
 
     private int commDataCtr;
@@ -71,30 +64,34 @@ public class JYDZ_Comm_Protocol {
     public int mPointCount = 0;
     public int[] dataBuffer;
     private TouchScreen JY_TouchScreen;
+    private IrmtInterface mHandler;
 
-    public JYDZ_Comm_Protocol(TouchScreen TouchScreen) {
+    public JYDZ_Comm_Protocol(TouchScreen TouchScreen, IrmtInterface handler) {
         JY_TouchScreen = TouchScreen;
         commStatus = COMM_STATUS_GET_HEADER;
         commLength = 0;
         commCmdType = DATAFEATURE_00;
         commCmdState = COMM_CMD_FALSE;
         commDataCtr = 0;
-        dataBuffer = new int[256];
+        dataBuffer = new int[400];
         mPointCount = 0;
         commLastStatus = COMM_STATUS_GET_HEADER;
         commdataFeatrue = DATAFEATURE_00;
         commControlCode = CONTROLCODE_NUSB;
+        mHandler = handler;
     }
 
-    private boolean compareChecksum() {
-        int dataLen = commLength - 2;
-        int sum = commLength + commCmdType + JYDZ_PROTOCOL_HEADER;
-        for (int i = 0; i < dataLen; i++) {
-            sum += dataBuffer[i];
+    private boolean CheckSum() {
+        int mSum = 0, Length = commLength - 2, ii;
+        mSum = commLength + commCmdType + JYDZ_PROTOCOL_HEADER;
+        for (ii = 0; ii < Length; ii++) {
+            mSum += dataBuffer[ii];
         }
-        sum = sum & 0xFF;
-        boolean result = commCheckSum == sum;
-        return result;
+        mSum &= 0xFF;
+        if (commCheckSum == mSum)
+            return true;
+        else
+            return false;
     }
 
     private boolean checkDataLength() {
@@ -140,7 +137,7 @@ public class JYDZ_Comm_Protocol {
         commCmdState = JYDZ_Comm_Protocol.COMM_CMD_FALSE;
     }
 
-    byte[] changeDataFeature() {
+    byte[] ChangeDataFeatrue() {
         if (commdataFeatrue == DATAFEATURE_00) {
             commdataFeatrue = DATAFEATURE_01;
             return PACKAGE_TRANSCMD_BYTE01;
@@ -154,83 +151,32 @@ public class JYDZ_Comm_Protocol {
             return null;
     }
 
-    byte[] lastUnhandleData = new byte[0];
-
-    private byte[] combineBytes(byte[] data1, byte[] data2) {
-        byte[] result = new byte[0];
-        if (null == data1 && null == data2) {
-            return result;
-        }
-        if (null == data2) {
-            result = data1;
-        }
-
-        if (null == data1) {
-            result = data2;
-        }
-
-        if (null != data1 && null != data2) {
-            result = new byte[data1.length + data2.length];
-            System.arraycopy(data1, 0, result, 0, data1.length);
-            System.arraycopy(data2, 0, result, data1.length, data2.length);
-        }
-
-        return result;
-    }
-
-    int handlerIncomeData(int numOfBytes, byte[] data) {
-        int errorCode = 0;
-        if (numOfBytes <= 0) {
-            return errorCode;
-        }
-
-        String hexStr = HexUtil.byteToString(TAG, data);
-        if (!TextUtils.isEmpty(hexStr)) {
-            DataLog.getInstance().writeInData(hexStr);
-            DataLog.getInstance().writeInLineData(hexStr);
-        }
-
-        byte[] totalData = combineBytes(lastUnhandleData, data);
-        int[] tempData = new int[totalData.length];
-        if (lastUnhandleData.length != 0) {
-            lastUnhandleData = new byte[0];
-        }
-        resetProtocol();
-        Arrays.fill(dataBuffer, 0);
-        int len = tempData.length;
-        ArrayList<Byte> validData = new ArrayList<>();
-
-        for (int index = 0; index < len; index++) {
-            tempData[index] = HexUtil.byteToUnsignedByte(totalData[index]);
-            validData.add(totalData[index]);
+    int[] localCache = new int[1024];
+    int handlerIncomeData(int numOfBytes, byte[] dataBuf) {
+        int errorcode = 0;
+        for (int index = 0; index < numOfBytes; index++) {
+            localCache[index] = dataBuf[index] & 0xFF;
 
             switch (commStatus) {
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_HEADER:
-                    if (tempData[index] == JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER) {
+                    if (localCache[index] == JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER)
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_LENGTH;
-                    }
-                    if (index == len - 1) {
-                        lastUnhandleData = new byte[]{JYDZ_Comm_Protocol.JYDZ_PROTOCOL_HEADER};
-                    }
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_LENGTH:
-                    commLength = tempData[index];
-                    commLastStatus = commStatus;
-                    if (commLength >= 2) {
+                    commLength = localCache[index];
+                    if ((commLength >= 2)) {
+                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_FEATURE;
-                        //For incomplete data
-                        if (index + commLength >= totalData.length) {
-                            lastUnhandleData = Arrays.copyOfRange(totalData, index - 1, len);
-                        }
                     } else {
-                        errorCode = COMM_STATUS_GET_LENGTH_ERROR;
+                        errorcode = COMM_STATUS_GET_LENGTH_ERROR;
+                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_ERROR;
                     }
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_FEATURE:
-                    commCmdType = tempData[index];
+                    commCmdType = localCache[index];
                     if (commCmdType == DATAFEATURE_00) {
                         mPointCount = (commLength - 2) / 5;
                     } else if (commCmdType == DATAFEATURE_01) {
@@ -239,20 +185,24 @@ public class JYDZ_Comm_Protocol {
                         mPointCount = (commLength - 2) / 10;
                     }
                     JY_TouchScreen.setNumOfPoints(mPointCount);
-                    commLastStatus = commStatus;
 
                     if (checkDataLength()) {
-                        commStatus = commLength == 2 ?
-                                JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM :
-                                JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA;
+                        if (commLength == 2) {
+                            commLastStatus = commStatus;
+                            commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM;
+                        } else {
+                            commLastStatus = commStatus;
+                            commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA;
+                        }
                     } else {
-                        errorCode = COMM_STATUS_GET_FEATURE_ERROR;
+                        errorcode = COMM_STATUS_GET_FEATURE_ERROR;
+                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_ERROR;
                     }
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_DATA:
-                    dataBuffer[commDataCtr++] = tempData[index];
+                    dataBuffer[commDataCtr++] = localCache[index];
                     if (commDataCtr >= commLength - 2) {
                         commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM;
@@ -260,13 +210,14 @@ public class JYDZ_Comm_Protocol {
                     break;
 
                 case JYDZ_Comm_Protocol.COMM_STATUS_GET_CHECKSUM:
-                    commCheckSum = tempData[index];
-                    commLastStatus = commStatus;
-                    if (compareChecksum()) {
+                    commCheckSum = localCache[index];
+                    if (CheckSum()) {
                         commCmdState = JYDZ_Comm_Protocol.COMM_CMD_OK;
+                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_GET_HEADER;
                     } else {
-                        errorCode = COMM_STATUS_GET_CHECKSUM_ERROR;
+                        errorcode = COMM_STATUS_GET_CHECKSUM_ERROR;
+                        commLastStatus = commStatus;
                         commStatus = JYDZ_Comm_Protocol.COMM_STATUS_ERROR;
                     }
                     break;
@@ -275,50 +226,52 @@ public class JYDZ_Comm_Protocol {
             }
 
             if (commStatus == JYDZ_Comm_Protocol.COMM_STATUS_ERROR) {
-                Log.e(TAG, "protocol parse error " + errorCode);
+                Log.e("debug", "protoocal parse error " + errorcode);
                 resetProtocol();
-                validData.clear();
             }
 
             if (commCmdState == JYDZ_Comm_Protocol.COMM_CMD_OK) {
                 resetProtocol();
-                hexStr = HexUtil.byteToString(TAG, validData);
-                if (!TextUtils.isEmpty(hexStr)) {
-                    DataLog.getInstance().writeOutData(hexStr);
-                }
-                validData.clear();
                 switch (commCmdType) {
                     case JYDZ_Comm_Protocol.DATAFEATURE_00:
-                        errorCode = COMM_STATUS_CHANGE_FORMAT;
+                        errorcode = COMM_STATUS_CHANGE_FORMAT;
                         break;
                     case JYDZ_Comm_Protocol.DATAFEATURE_01:
-                        errorCode = COMM_STATUS_CHANGE_FORMAT;
+                        errorcode = COMM_STATUS_CHANGE_FORMAT;
                         break;
                     case JYDZ_Comm_Protocol.DATAFEATURE_02:
                         JY_TouchScreen.parsePoints(mPointCount, dataBuffer);
-                        errorCode = COMM_STATUS_DATA_GET_OK;
+                        if (JY_TouchScreen.mTouchDownList.size() > 0) {
+                            mHandler.onTouchDown(JY_TouchScreen.mTouchDownList);
+                            JY_TouchScreen.mTouchDownList.clear();
+                        }
+                        if (JY_TouchScreen.mTouchUpList.size() > 0) {
+                            mHandler.onTouchUp(JY_TouchScreen.mTouchUpList);
+                            JY_TouchScreen.mTouchUpList.clear();
+                        }
+                        errorcode = COMM_STATUS_DATA_GET_OK;
                         break;
                     case JYDZ_Comm_Protocol.SCREENFEATURE:
                         JY_TouchScreen.setIrTouchFeature(dataBuffer);
-                        errorCode = COMM_STATUS_SCREENFEATURE_GET;
+                        errorcode = COMM_STATUS_SCREENFEATURE_GET;
                         break;
                     case JYDZ_Comm_Protocol.GESTURE:
                         JY_TouchScreen.setmGuesture(dataBuffer[0]);
-                        errorCode = COMM_STATUS_GESTURE_GET;
+                        errorcode = COMM_STATUS_GESTURE_GET;
                         break;
                     case JYDZ_Comm_Protocol.SNAPSHOT:
                         JY_TouchScreen.setSnapShot(dataBuffer[0]);
-                        errorCode = COMM_STATUS_SNAPSHOT_GET;
+                        errorcode = COMM_STATUS_SNAPSHOT_GET;
                         break;
                     case JYDZ_Comm_Protocol.IDENTI:
                         JY_TouchScreen.setID(dataBuffer[0] + dataBuffer[1] * 256 + dataBuffer[2] * 256 * 256 + dataBuffer[3] * 256 * 256 * 256);
-                        errorCode = COMM_STATUS_IDENTI_GET;
+                        errorcode = COMM_STATUS_IDENTI_GET;
                         break;
                     default:
                         break;
                 }
             }
         }
-        return errorCode;
+        return errorcode;
     }
 }
