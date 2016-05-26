@@ -19,6 +19,9 @@ public class TouchScreen {
     public int mNumOfPoints;
     public int mSnapShot;
     public final int dataSize = 10;
+    private int maxIdFromHardware = 255;
+    private int idRound = 0;//count id by ourselves.
+    private int lastId = 0;
 
     private HashMap<Integer, TouchPoint> downMap = new HashMap<>();
     private HashMap<Integer, TouchPoint> upMap = new HashMap<>();
@@ -34,21 +37,27 @@ public class TouchScreen {
         for (int kk = 0; kk < pointCount; kk++) {
             parsedPoint = new TouchPoint();
             parsedPoint.pointStatus = (byte) dataBuffer[kk * dataSize];
-            parsedPoint.pointId = dataBuffer[kk * dataSize + 1];
+            int id = dataBuffer[kk * dataSize + 1];
+            if (lastId - id > 20) {
+                //当当前ID和之前的ID相差20时，可以表示硬件那边ID达到最大后，重新从1开始计数了
+                //因为正常情况，差值应该为1.用差值就可以避免判断硬件那边最大ID是31还是255了
+                idRound++;
+            }
+            lastId = id;
+            parsedPoint.pointId = id + idRound * maxIdFromHardware;
+
             parsedPoint.pointX = dataBuffer[kk * dataSize + 2] + dataBuffer[kk * dataSize + 3] * 256;
             parsedPoint.pointY = dataBuffer[kk * dataSize + 4] + dataBuffer[kk * dataSize + 5] * 256;
             parsedPoint.pointWidth = dataBuffer[kk * dataSize + 6] + dataBuffer[kk * dataSize + 7] * 256;
             parsedPoint.pointHeight = dataBuffer[kk * dataSize + 8] + dataBuffer[kk * dataSize + 9] * 256;
             parsedPoint.pointArea = parsedPoint.pointWidth * parsedPoint.pointHeight;
 
-            // TODO: 2016/5/11  Ignore duplicate points with same id ??
             //only keeps last point for one id at one time read
             //because IRMT TEST does this way.
             //and hardware points are not accurate. Many too closed point cause the bad result
             if (parsedPoint.pointStatus == POINT_STATUS_DOWN) {
                 downMap.put(parsedPoint.pointId, parsedPoint);
-            }
-            else {
+            } else {
                 upMap.put(parsedPoint.pointId, parsedPoint);
             }
         }
